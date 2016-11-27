@@ -1,13 +1,20 @@
 ﻿/* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
 using System.Collections.Generic;
@@ -18,9 +25,9 @@ namespace SharpNeat.Decoders.HyperNeat
     /// Defines a mapping between two node sets based on mapping all source nodes to all target nodes, but with an option to 
     /// omit mappings where the distance between source and target node is over some threshold. 
     /// 
-    /// In addition the same nodeset can be passed to the GenerateConnections() method as both source and target. This allows 
+    /// In addition the same nodeset can be passed to the GenerateConnections() method as both source and targt. This allows 
     /// for creating connections between nodes within a layer. The optional max distance still applies and an additional boolean
-    /// option indicates if the local recurrent connection for each node (from its output back to its input) should be generated.
+    /// option indicates if the local recurrent conenction for each node (from its output back to its input) should be generated.
     /// </summary>
     public class DefaultNodeSetMappingFunction : INodeSetMappingFunction
     {
@@ -166,7 +173,7 @@ namespace SharpNeat.Decoders.HyperNeat
         }
 
         /// <summary>
-        /// Calculate the Euclidean distance between two points in n-dimensions.
+        /// Calulcate the Euclidean distance between two points in n-dimensions.
         /// </summary>
         private double CalcDistanceSquared(double[] srcPos, double[] tgtPos)
         {

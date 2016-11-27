@@ -1,15 +1,23 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System.Collections.Generic;
+using System.Collections;
 
 namespace SharpNeat.Core
 {
@@ -29,7 +37,7 @@ namespace SharpNeat.Core
 
         /// <summary>
         /// Gets a value indicating whether some goal fitness has been achieved and that
-        /// the evolutionary algorithm search should stop. This property's value can remain false
+        /// the the evolutionary algorithm search should stop. This property's value can remain false
         /// to allow the algorithm to run indefinitely.
         /// </summary>
         bool StopConditionSatisfied { get; }
@@ -37,7 +45,7 @@ namespace SharpNeat.Core
         /// <summary>
         /// Evaluates a list of genomes.
         /// </summary>
-        void Evaluate(IList<TGenome> genomeList);  
+        IEnumerator Evaluate(IList<TGenome> genomeList);  
 
         /// <summary>
         /// Reset the internal state of the evaluation scheme if any exists.

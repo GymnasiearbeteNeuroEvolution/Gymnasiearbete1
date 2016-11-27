@@ -1,13 +1,20 @@
 ﻿/* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using SharpNeat.Network;
 
@@ -17,12 +24,12 @@ namespace SharpNeat.Phenomes.NeuralNets
     /// A neural network implementation for acyclic networks.
     /// 
     /// Activation of acyclic networks can be far more efficient than cyclic networks because we can activate the network by 
-    /// propagating a signal 'wave' from the input nodes through each depth layer through to the output nodes, thus each node
-    /// requires activating only once at most, whereas in cyclic networks we have to activate each node multiple times and we 
-    /// must have a scheme for determining when to stop activating.
+    /// propogating a signal 'wave' from the input nodes through each depth layer through to teh output nodes, thus each node
+    /// requries activating only once at most, whereas in cyclic networks we have to activate each node multiple times and we 
+    /// muts have a scheme for determinign when to stop activating.
     /// 
     /// Algorithm Overview.
-    /// 1) The nodes are assigned a depth number based on how many connection hops they are from an input node. Where multiple 
+    /// 1) The nodes are assigned a depth number based on how many connection hops they are from an input nodes. Where multiple 
     /// paths to a node exist the longest path determines the node's depth.
     /// 
     /// 2) Connections are similarly assigned a depth value which is defined as the depth of a connection's source node.
@@ -31,11 +38,11 @@ namespace SharpNeat.Phenomes.NeuralNets
     /// 
     /// 3) Reset all node activation values to zero. This resets any state from a previous activation.
     /// 
-    /// 4) Each layer of the network can now be activated in turn to propagate the signals on the input nodes through the network.
+    /// 4) Each layer of the network can now be activated in turn to propogate the signals on the input nodes through the network.
     /// Input nodes do no apply an activation function so we start by activating the connections on the first layer (depth == 0), 
     /// this accumulates node pre-activation signals on all of the target nodes which can be anywhere from depth 1 to the highest 
-    /// depth level. Having done this we apply the node activation function for all nodes at the layer 1 because we can now 
-    /// guarantee that there will be no more incoming signals to those nodes. Repeat for all remaining layers in turn.
+    /// depth level. Haveing done this we apply the node activation function for all nodes at the layer 1 because we can now 
+    /// guarantee that there will be no more incomign signals to those nodes. Repeat for all remaining layers in turn.
     /// </summary>
     public class FastAcyclicNetwork : IBlackBox
     {
@@ -53,8 +60,8 @@ namespace SharpNeat.Phenomes.NeuralNets
         /// </summary>
         readonly FastConnection[] _connectionArr;
         /// <summary>
-        /// Array of layer information. Feed-forward-only network activation can be performed most 
-        /// efficiently by propagating signals through the network one layer at a time.
+        /// Array of layer information. Feedforward-only network activation can be performed most 
+        /// efficiently by propogating signals through the network one layer at a time.
         /// </summary>
         readonly LayerInfo[] _layerInfoArr;
 
@@ -100,7 +107,7 @@ namespace SharpNeat.Phenomes.NeuralNets
                                   int inputNodeCount,
                                   int outputNodeCount)
         {
-            // Store refs to network structure data.
+            // Store refs to network structrue data.
             _nodeActivationFnArr = nodeActivationFnArr;
             _nodeAuxArgsArr = nodeAuxArgsArr;
             _connectionArr = connectionArr;

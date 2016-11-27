@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System.Collections.Generic;
 
@@ -128,7 +135,7 @@ namespace SharpNeat.Phenomes.NeuralNets
             // part of the working data of the network.
             for(int i=0; i<_inputNeuronCount; i++)
             {   // The +1 takes into account the bias neuron at index 0.
-                // Note. we set the output value of the input neurons, not the input value. This is because we 
+                // Note. we set the outputvalue of the input neurons, not the input value. This is because we 
                 // don't want the signal to pass through the neuron's activation function.
                 _neuronList[i+1].OutputValue = _inputSignalArray[i];
             }

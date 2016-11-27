@@ -20,11 +20,19 @@ public class CameraManager : MonoBehaviour
     {
         get { return Camera.main.ViewportToWorldPoint(new Vector3(1, 0, Camera.main.nearClipPlane)); }
     }
+    /// <summary>
+    /// Checks if a Vector3 in the world is within the bounds of the camera.
+    /// </summary>
+    public static bool IsWithinCameraBounds(Vector3 position, float xPadding, float yPadding)
+    {
+        //Checks for the vertical axis
+        if ((position.y - yPadding) > TopLeftCorner.y || (position.y + yPadding) < BottomLeftCorner.y)
+            return false;
+        //Checks for the horizontal axis
+        else if ((position.x - xPadding) > TopRightCorner.x || (position.x + xPadding) < TopLeftCorner.x)
+            return false;
+        else
+            return true;
 
-    void Start () {
     }
-
-    // Update is called once per frame
-    void Update () {
-	}
 }

@@ -1,17 +1,23 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System.Collections.Generic;
-using Redzen.Numerics;
 using SharpNeat.Utility;
 
 namespace SharpNeat.Genomes.Neat
@@ -25,7 +31,7 @@ namespace SharpNeat.Genomes.Neat
     /// </summary>
     public class ConnectionMutationInfoList : List<ConnectionMutationInfo>
     {
-        DiscreteDistribution _rouletteWheelLayout;
+        RouletteWheelLayout _rouletteWheelLayout;
 
         #region Constructors
 
@@ -61,7 +67,7 @@ namespace SharpNeat.Genomes.Neat
         #region Public Methods/Properties
 
         /// <summary>
-        /// Initialize the list. Call this after all items have been add to the list. This
+        /// Initialize the list. Call this after all items have been aded to the list. This
         /// creates a RouletteWheelLayout based upon the activation probability of each item 
         /// in the list.
         /// </summary>
@@ -74,16 +80,16 @@ namespace SharpNeat.Genomes.Neat
         /// Gets one of the ConnectionMutationInfo items at random based upon the ActivationProbability 
         /// of the contained items.
         /// </summary>
-        public ConnectionMutationInfo GetRandomItem(XorShiftRandom rng)
+        public ConnectionMutationInfo GetRandomItem(FastRandom rng)
         {
-            return this[DiscreteDistributionUtils.Sample(_rouletteWheelLayout, rng)];
+            return this[RouletteWheel.SingleThrow(_rouletteWheelLayout, rng)];
         }
 
         /// <summary>
         /// Gets the RouletteWheelLayout for the items in the list. This is based upon the activation 
         /// probability of each item in the list at the time Initialise was called.
         /// </summary>
-        public DiscreteDistribution RouletteWheelLayout
+        public RouletteWheelLayout RouletteWheelLayout
         {
             get { return _rouletteWheelLayout; }
         }
@@ -92,14 +98,14 @@ namespace SharpNeat.Genomes.Neat
 
         #region Private Methods
 
-        private DiscreteDistribution CreateRouletteWheelLayout()
+        private RouletteWheelLayout CreateRouletteWheelLayout()
         {
             int count = this.Count;
             double[] probabilities = new double[count];
             for(int i=0; i<count; i++) {
                 probabilities[i] = this[i].ActivationProbability;
             }
-            return new DiscreteDistribution(probabilities);
+            return new RouletteWheelLayout(probabilities);
         }
 
         #endregion

@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
 using System.Collections.Generic;
@@ -72,7 +79,7 @@ namespace SharpNeat.SpeciationStrategies
         /// Speciates the genomes in genomeList into the provided specieList. It is assumed that
         /// the genomeList represents all of the required genomes and that the species are currently empty.
         /// 
-        /// This method can be used for initialization or completely re-speciating an existing genome population.
+        /// This method can be used for initialization or completely respeciating an existing genome population.
         /// </summary>
         public void SpeciateGenomes(IList<TGenome> genomeList, IList<Specie<TGenome>> specieList)
         {
@@ -173,7 +180,7 @@ namespace SharpNeat.SpeciationStrategies
         /// Perform the main k-means loop until no genome reallocations occur or some maximum number of loops
         /// has been performed. Theoretically a small number of reallocations may occur for a great many loops 
         /// therefore we require the additional max loops threshold exit strategy - the clusters should be pretty
-        /// stable and well defined after a few loops even if the algorithm hasn't converged completely.
+        /// stable and well defined after a few loops even if the the algorithm hasn't converged completely.
         /// </summary>
         private void SpeciateUntilConvergence(IList<TGenome> genomeList, IList<Specie<TGenome>> specieList)
         {
@@ -223,7 +230,7 @@ namespace SharpNeat.SpeciationStrategies
                     // Reset flag.
                     specieModArr[i] = false;
                     
-                    // Remove the genomes that have been allocated to other species. We fill the resulting 
+                    // Remove the genomes that have been allocated to other other species. We fill the resulting 
                     // gaps by shuffling down the remaining genomes.
                     Specie<TGenome> specie = specieList[i];
                     specie.GenomeList.RemoveAll(delegate(TGenome genome) 
@@ -232,7 +239,7 @@ namespace SharpNeat.SpeciationStrategies
                     });
 
                     // Track empty species. We will allocate genomes to them after this loop.
-                    // This is necessary as some distance metrics can result in empty species occurring.
+                    // This is necessary as some distance metrics can result in empty species occuring.
                     if(0 == specie.GenomeList.Count) {
                         emptySpecieList.Add(specie);
                     }
@@ -248,7 +255,7 @@ namespace SharpNeat.SpeciationStrategies
                 {
                     // We find the genomes in the population as a whole that are furthest from their containing specie's 
                     // centroid genome - we call these outlier genomes. We then move these genomes into the empty species to
-                    // act as the sole member and centroid of those species; These act as specie seeds for the next k-means loop.
+                    // act as the sole member and centroid of those speciea; These act as specie seeds for the next k-means loop.
                     TGenome[] genomeByDistanceArr = GetGenomesByDistanceFromSpecie(genomeList, specieList);
 
                     // Reallocate each of the outlier genomes from their current specie to an empty specie.
@@ -303,7 +310,7 @@ namespace SharpNeat.SpeciationStrategies
                     emptySpecieList.Clear();
                 }
 
-                // Exit the loop if no genome reallocations have occurred. The species are stable, speciation is completed.
+                // Exit the loop if no genome reallocations have occured. The species are stable, speciation is completed.
                 if(0==reallocations) {
                     break;
                 }
@@ -338,7 +345,7 @@ namespace SharpNeat.SpeciationStrategies
         /// </summary>
         private TGenome[] GetGenomesByDistanceFromSpecie(IList<TGenome> genomeList, IList<Specie<TGenome>> specieList)
         {
-            // Build a list of all genomes paired with their distance from their centroid.
+            // Build a list of all genomes paired with their distance from their centriod.
             int genomeCount = genomeList.Count;
             GenomeDistancePair<TGenome>[] genomeDistanceArr = new GenomeDistancePair<TGenome>[genomeCount];
             for(int i=0; i<genomeCount; i++)

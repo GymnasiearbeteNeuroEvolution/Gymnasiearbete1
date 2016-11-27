@@ -30,7 +30,7 @@ public class SharkController : MonoBehaviour {
                              ? current : next).go;
             var dir = Vector3.Normalize(closestGameObject.transform.position - currentPosition);
 
-            transform.position += dir * Time.deltaTime * 20f;
+            transform.position += dir * Time.deltaTime * FishSettings.Instance.SharkSpeed;
         }
     
 

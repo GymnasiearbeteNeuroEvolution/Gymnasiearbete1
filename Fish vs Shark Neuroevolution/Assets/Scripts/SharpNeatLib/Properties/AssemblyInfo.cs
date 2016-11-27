@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SharpNeatLib")]
-[assembly: AssemblyCopyright("Copyright © Colin Green 2004 - 2012")]
+[assembly: AssemblyCopyright("Copyright © 2004 - 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

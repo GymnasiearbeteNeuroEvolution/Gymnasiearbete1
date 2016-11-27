@@ -1,24 +1,31 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Redzen.Numerics;
-using Redzen.Sorting;
 using SharpNeat.Core;
 using SharpNeat.DistanceMetrics;
 using SharpNeat.EvolutionAlgorithms.ComplexityRegulation;
 using SharpNeat.SpeciationStrategies;
+using SharpNeat.Utility;
+using System.Collections;
 
 namespace SharpNeat.EvolutionAlgorithms
 {
@@ -40,7 +47,7 @@ namespace SharpNeat.EvolutionAlgorithms
         IList<Specie<TGenome>> _specieList;
         /// <summary>Index of the specie that contains _currentBestGenome.</summary>
         int _bestSpecieIdx;
-        readonly XorShiftRandom _rng = new XorShiftRandom();
+        readonly FastRandom _rng = new FastRandom();
         readonly NeatAlgorithmStats _stats;
 
         ComplexityRegulationMode _complexityRegulationMode;
@@ -163,7 +170,7 @@ namespace SharpNeat.EvolutionAlgorithms
 
             // Speciate the genomes.
             _specieList = _speciationStrategy.InitializeSpeciation(_genomeList, _eaParams.SpecieCount);
-            Debug.Assert(!TestForEmptySpecies(_specieList), "Speciation resulted in one or more empty species.");
+            //Debug.Assert(!TestForEmptySpecies(_specieList), "Speciation resulted in one or more empty species.");
             
             // Sort the genomes in each specie fittest first, secondary sort youngest first.
             SortSpecieGenomes();
@@ -179,7 +186,7 @@ namespace SharpNeat.EvolutionAlgorithms
         /// <summary>
         /// Progress forward by one generation. Perform one generation/iteration of the evolution algorithm.
         /// </summary>
-        protected override void PerformOneGeneration()
+        protected override IEnumerator PerformOneGeneration()
         {
             // Calculate statistics for each specie (mean fitness, target size, number of offspring to produce etc.)
             int offspringCount;
@@ -200,7 +207,7 @@ namespace SharpNeat.EvolutionAlgorithms
             _genomeList.AddRange(offspringList);
 
             // Evaluate genomes.
-            _genomeListEvaluator.Evaluate(_genomeList);
+            yield return Coroutiner.StartCoroutine( _genomeListEvaluator.Evaluate(_genomeList));
 
             // Integrate offspring into species.
             if(emptySpeciesFlag)
@@ -219,7 +226,7 @@ namespace SharpNeat.EvolutionAlgorithms
                 // Integrate offspring into the existing species. 
                 _speciationStrategy.SpeciateOffspring(offspringList, _specieList);            
             }
-            Debug.Assert(!TestForEmptySpecies(_specieList), "Speciation resulted in one or more empty species.");
+            //Debug.Assert(!TestForEmptySpecies(_specieList), "Speciation resulted in one or more empty species.");
 
             // Sort the genomes in each specie. Fittest first (secondary sort - youngest first).
             SortSpecieGenomes();
@@ -244,7 +251,7 @@ namespace SharpNeat.EvolutionAlgorithms
             }
 
             // TODO: More checks.
-            Debug.Assert(_genomeList.Count == _populationSize);
+            //Debug.Assert(_genomeList.Count == _populationSize);
         }
 
         #endregion
@@ -292,7 +299,7 @@ namespace SharpNeat.EvolutionAlgorithms
 
                     // Stochastic rounding will result in equal allocation if targetSizeReal is a whole
                     // number, otherwise it will help to distribute allocations evenly.
-                    inst._targetSizeInt = (int)NumericsUtils.ProbabilisticRound(targetSizeReal, _rng);
+                    inst._targetSizeInt = (int)Utilities.ProbabilisticRound(targetSizeReal, _rng);
 
                     // Total up discretized target sizes.
                     totalTargetSizeInt += inst._targetSizeInt;
@@ -307,7 +314,7 @@ namespace SharpNeat.EvolutionAlgorithms
                     inst._targetSizeReal = (inst._meanFitness / totalMeanFitness) * (double)_populationSize;
 
                     // Discretize targetSize (stochastic rounding).
-                    inst._targetSizeInt = (int)NumericsUtils.ProbabilisticRound(inst._targetSizeReal, _rng);
+                    inst._targetSizeInt = (int)Utilities.ProbabilisticRound(inst._targetSizeReal, _rng);
 
                     // Total up discretized target sizes.
                     totalTargetSizeInt += inst._targetSizeInt;
@@ -352,16 +359,16 @@ namespace SharpNeat.EvolutionAlgorithms
                     }
 
                     // Use a built in class for choosing an item based on a list of relative probabilities.
-                    DiscreteDistribution rwl = new DiscreteDistribution(probabilities);
+                    RouletteWheelLayout rwl = new RouletteWheelLayout(probabilities);
 
                     // Probabilistically assign the required number of additional allocations.
-                    // FIXME/ENHANCEMENT: We can improve the allocation fairness by updating the RouletteWheelLayout 
+                    // ENHANCEMENT: We can improve the allocation fairness by updating the RouletteWheelLayout 
                     // after each allocation (to reflect that allocation).
                     // targetSizeDeltaInt is negative, so flip the sign for code clarity.
                     targetSizeDeltaInt *= -1;
                     for(int i=0; i<targetSizeDeltaInt; i++)
                     {
-                        int specieIdx = DiscreteDistributionUtils.Sample(rwl, _rng);
+                        int specieIdx = RouletteWheel.SingleThrow(rwl, _rng);
                         specieStatsArr[specieIdx]._targetSizeInt++;
                     }
                 }
@@ -378,14 +385,14 @@ namespace SharpNeat.EvolutionAlgorithms
                 }
 
                 // Use a built in class for choosing an item based on a list of relative probabilities.
-                DiscreteDistribution rwl = new DiscreteDistribution(probabilities);
+                RouletteWheelLayout rwl = new RouletteWheelLayout(probabilities);
 
                 // Probabilistically decrement specie target sizes.
                 // ENHANCEMENT: We can improve the selection fairness by updating the RouletteWheelLayout 
                 // after each decrement (to reflect that decrement).
                 for(int i=0; i<targetSizeDeltaInt;)
                 {
-                    int specieIdx = DiscreteDistributionUtils.Sample(rwl, _rng);
+                    int specieIdx = RouletteWheel.SingleThrow(rwl, _rng);
 
                     // Skip empty species. This can happen because the same species can be selected more than once.
                     if(0 != specieStatsArr[specieIdx]._targetSizeInt) {   
@@ -396,7 +403,7 @@ namespace SharpNeat.EvolutionAlgorithms
             }
 
             // We now have Sum(_targetSizeInt) == _populationSize. 
-            Debug.Assert(SumTargetSizeInt(specieStatsArr) == _populationSize);
+            //Debug.Assert(SumTargetSizeInt(specieStatsArr) == _populationSize);
 
             // TODO: Better way of ensuring champ species has non-zero target size?
             // However we need to check that the specie with the best genome has a non-zero targetSizeInt in order
@@ -408,7 +415,7 @@ namespace SharpNeat.EvolutionAlgorithms
                 // Adjust down the target size of one of the other species to compensate.
                 // Pick a specie at random (but not the champ specie). Note that this may result in a specie with a zero 
                 // target size, this is OK at this stage. We handle allocations of zero in PerformOneGeneration().
-                int idx = DiscreteDistributionUtils.SampleUniformDistribution(specieCount-1, _rng);
+                int idx = RouletteWheel.SingleThrowEven(specieCount-1, _rng);
                 idx = idx==_bestSpecieIdx ? idx+1 : idx;
 
                 if(specieStatsArr[idx]._targetSizeInt > 0) {
@@ -459,19 +466,19 @@ namespace SharpNeat.EvolutionAlgorithms
 
                 // Discretize the real size with a probabilistic handling of the fractional part.
                 double eliteSizeReal = _specieList[i].GenomeList.Count * _eaParams.ElitismProportion;
-                int eliteSizeInt = (int)NumericsUtils.ProbabilisticRound(eliteSizeReal, _rng);
+                int eliteSizeInt = (int)Utilities.ProbabilisticRound(eliteSizeReal, _rng);
 
                 // Ensure eliteSizeInt is no larger than the current target size (remember it was calculated 
                 // against the current size of the specie not its new target size).
                 SpecieStats inst = specieStatsArr[i];
                 inst._eliteSizeInt = Math.Min(eliteSizeInt, inst._targetSizeInt);
 
-                // Ensure the champ specie preserves the champ genome. We do this even if the target size is just 1
+                // Ensure the champ specie preserves the champ genome. We do this even if the targetsize is just 1
                 // - which means the champ genome will remain and no offspring will be produced from it, apart from 
                 // the (usually small) chance of a cross-species mating.
                 if(i == _bestSpecieIdx && inst._eliteSizeInt==0)
                 {
-                    Debug.Assert(inst._targetSizeInt !=0, "Zero target size assigned to champ specie.");
+                    //Debug.Assert(inst._targetSizeInt !=0, "Zero target size assigned to champ specie.");
                     inst._eliteSizeInt = 1;
                 }
 
@@ -482,13 +489,13 @@ namespace SharpNeat.EvolutionAlgorithms
                 // While we're here we determine the split between asexual and sexual reproduction. Again using 
                 // some probabilistic logic to compensate for any rounding bias.
                 double offspringAsexualCountReal = (double)inst._offspringCount * _eaParams.OffspringAsexualProportion;
-                inst._offspringAsexualCount = (int)NumericsUtils.ProbabilisticRound(offspringAsexualCountReal, _rng);
+                inst._offspringAsexualCount = (int)Utilities.ProbabilisticRound(offspringAsexualCountReal, _rng);
                 inst._offspringSexualCount = inst._offspringCount - inst._offspringAsexualCount;
 
                 // Also while we're here we calculate the selectionSize. The number of the specie's fittest genomes
                 // that are selected from to create offspring. This should always be at least 1.
                 double selectionSizeReal = _specieList[i].GenomeList.Count * _eaParams.SelectionProportion;
-                inst._selectionSizeInt = Math.Max(1, (int)NumericsUtils.ProbabilisticRound(selectionSizeReal, _rng));
+                inst._selectionSizeInt = Math.Max(1, (int)Utilities.ProbabilisticRound(selectionSizeReal, _rng));
             }
 
             return specieStatsArr;
@@ -506,7 +513,7 @@ namespace SharpNeat.EvolutionAlgorithms
             // all species when performing cross-specie matings.
             int specieCount = specieStatsArr.Length;
             double[] specieFitnessArr = new double[specieCount];
-            DiscreteDistribution[] rwlArr = new DiscreteDistribution[specieCount];
+            RouletteWheelLayout[] rwlArr = new RouletteWheelLayout[specieCount];
 
             // Count of species with non-zero selection size.
             // If this is exactly 1 then we skip inter-species mating. One is a special case because for 0 the 
@@ -514,7 +521,7 @@ namespace SharpNeat.EvolutionAlgorithms
             int nonZeroSpecieCount = 0;
             for(int i=0; i<specieCount; i++) 
             {
-                // Array of probabilities for specie selection. Note that some of these probabilities can be zero, but at least one of them won't be.
+                // Array of probabilities for specie selection. Note that some of these probabilites can be zero, but at least one of them won't be.
                 SpecieStats inst = specieStatsArr[i];
                 specieFitnessArr[i] = inst._selectionSizeInt;
                 if(0 != inst._selectionSizeInt) {
@@ -528,11 +535,11 @@ namespace SharpNeat.EvolutionAlgorithms
                 for(int j=0; j<inst._selectionSizeInt; j++) {
                     probabilities[j] = genomeList[j].EvaluationInfo.Fitness;
                 }
-                rwlArr[i] = new DiscreteDistribution(probabilities);
+                rwlArr[i] = new RouletteWheelLayout(probabilities);
             }
 
             // Complete construction of RouletteWheelLayout for specie selection.
-            DiscreteDistribution rwlSpecies = new DiscreteDistribution(specieFitnessArr);
+            RouletteWheelLayout rwlSpecies = new RouletteWheelLayout(specieFitnessArr);
 
             // Produce offspring from each specie in turn and store them in offspringList.
             List<TGenome> offspringList = new List<TGenome>(offspringCount);
@@ -542,12 +549,12 @@ namespace SharpNeat.EvolutionAlgorithms
                 List<TGenome> genomeList = _specieList[specieIdx].GenomeList;
 
                 // Get RouletteWheelLayout for genome selection.
-                DiscreteDistribution rwl = rwlArr[specieIdx];
+                RouletteWheelLayout rwl = rwlArr[specieIdx];
 
             // --- Produce the required number of offspring from asexual reproduction.
                 for(int i=0; i<inst._offspringAsexualCount; i++)
                 {
-                    int genomeIdx = DiscreteDistributionUtils.Sample(rwl, _rng);
+                    int genomeIdx = RouletteWheel.SingleThrow(rwl, _rng);
                     TGenome offspring = genomeList[genomeIdx].CreateOffspring(_currentGeneration);
                     offspringList.Add(offspring);
                 }
@@ -558,7 +565,7 @@ namespace SharpNeat.EvolutionAlgorithms
                 // If nonZeroSpecieCount is exactly 1 then we skip inter-species mating. One is a special case because
                 // for 0 the  species all get an even chance of selection, and for >1 we can just select species normally.
                 int crossSpecieMatings = nonZeroSpecieCount==1 ? 0 :
-                                            (int)NumericsUtils.ProbabilisticRound(_eaParams.InterspeciesMatingProportion 
+                                            (int)Utilities.ProbabilisticRound(_eaParams.InterspeciesMatingProportion 
                                                                             * inst._offspringSexualCount, _rng);
                 _stats._sexualOffspringCount += (ulong)(inst._offspringSexualCount - crossSpecieMatings);
                 _stats._interspeciesOffspringCount += (ulong)crossSpecieMatings;
@@ -578,7 +585,7 @@ namespace SharpNeat.EvolutionAlgorithms
                     // Fall-back to asexual reproduction.
                     for(; matingsCount<inst._offspringSexualCount; matingsCount++)
                     {
-                        int genomeIdx = DiscreteDistributionUtils.Sample(rwl, _rng);
+                        int genomeIdx = RouletteWheel.SingleThrow(rwl, _rng);
                         TGenome offspring = genomeList[genomeIdx].CreateOffspring(_currentGeneration);
                         offspringList.Add(offspring);
                     }
@@ -588,17 +595,15 @@ namespace SharpNeat.EvolutionAlgorithms
                     // Remainder of matings are normal within-specie.
                     for(; matingsCount<inst._offspringSexualCount; matingsCount++)
                     {
-                        // Select parent 1.
-                        int parent1Idx = DiscreteDistributionUtils.Sample(rwl, _rng);
+                        // Select parents. SelectRouletteWheelItem() guarantees parent2Idx!=parent1Idx
+                        int parent1Idx = RouletteWheel.SingleThrow(rwl, _rng);
                         TGenome parent1 = genomeList[parent1Idx];
 
                         // Remove selected parent from set of possible outcomes.
-                        DiscreteDistribution rwlTmp = rwl.RemoveOutcome(parent1Idx);
-
-                        // Test for existence of at least one more parent to select.
-                        if(0 != rwlTmp.Probabilities.Length)
+                        RouletteWheelLayout rwlTmp = rwl.RemoveOutcome(parent1Idx);
+                        if(0.0 != rwlTmp.ProbabilitiesTotal)
                         {   // Get the two parents to mate.
-                            int parent2Idx = DiscreteDistributionUtils.Sample(rwlTmp, _rng);
+                            int parent2Idx = RouletteWheel.SingleThrow(rwlTmp, _rng);
                             TGenome parent2 = genomeList[parent2Idx];
                             TGenome offspring = parent1.CreateOffspring(parent2, _currentGeneration);
                             offspringList.Add(offspring);
@@ -620,26 +625,26 @@ namespace SharpNeat.EvolutionAlgorithms
         /// <summary>
         /// Cross specie mating.
         /// </summary>
-        /// <param name="rwl">RouletteWheelLayout for selecting genomes in the current specie.</param>
+        /// <param name="rwl">RouletteWheelLayout for selectign genomes in teh current specie.</param>
         /// <param name="rwlArr">Array of RouletteWheelLayout objects for genome selection. One for each specie.</param>
         /// <param name="rwlSpecies">RouletteWheelLayout for selecting species. Based on relative fitness of species.</param>
         /// <param name="currentSpecieIdx">Current specie's index in _specieList</param>
         /// <param name="genomeList">Current specie's genome list.</param>
-        private TGenome CreateOffspring_CrossSpecieMating(DiscreteDistribution rwl,
-                                                          DiscreteDistribution[] rwlArr,
-                                                          DiscreteDistribution rwlSpecies,
+        private TGenome CreateOffspring_CrossSpecieMating(RouletteWheelLayout rwl,
+                                                          RouletteWheelLayout[] rwlArr,
+                                                          RouletteWheelLayout rwlSpecies,
                                                           int currentSpecieIdx,
                                                           IList<TGenome> genomeList)
         {
             // Select parent from current specie.
-            int parent1Idx = DiscreteDistributionUtils.Sample(rwl, _rng);
+            int parent1Idx = RouletteWheel.SingleThrow(rwl, _rng);
 
             // Select specie other than current one for 2nd parent genome.
-            DiscreteDistribution rwlSpeciesTmp = rwlSpecies.RemoveOutcome(currentSpecieIdx);
-            int specie2Idx = DiscreteDistributionUtils.Sample(rwlSpeciesTmp, _rng);
+            RouletteWheelLayout rwlSpeciesTmp = rwlSpecies.RemoveOutcome(currentSpecieIdx);
+            int specie2Idx = RouletteWheel.SingleThrow(rwlSpeciesTmp, _rng);
             
             // Select a parent genome from the second specie.
-            int parent2Idx = DiscreteDistributionUtils.Sample(rwlArr[specie2Idx], _rng);
+            int parent2Idx = RouletteWheel.SingleThrow(rwlArr[specie2Idx], _rng);
 
             // Get the two parents to mate.
             TGenome parent1 = genomeList[parent1Idx];
@@ -756,7 +761,11 @@ namespace SharpNeat.EvolutionAlgorithms
 
             for(int i=0; i<specieCount; i++)
             {
-                SortUtils.SortUnstable(_specieList[i].GenomeList, GenomeFitnessComparer<TGenome>.Singleton, _rng);
+                // Shuffle the genomes; this ensures that genomes with equal fitness are randomly distributed amongst themselves, and therefore
+                // that the top N genomes chosen for selection and elitism isn't biased to an arbitrary set that happen to be at the front of a genome list.
+                // N.B. In github/colgreen/SharpNEAT this is done using SortUtils.SortUnstable() for improved performance.
+                Utilities.Shuffle(_specieList[i].GenomeList, _rng);
+                _specieList[i].GenomeList.Sort(GenomeFitnessComparer<TGenome>.Singleton);
                 minSize = Math.Min(minSize, _specieList[i].GenomeList.Count);
                 maxSize = Math.Max(maxSize, _specieList[i].GenomeList.Count);
             }
@@ -831,7 +840,7 @@ namespace SharpNeat.EvolutionAlgorithms
         {
             int count = specieStatsArr.Length;
             for(int i=0; i<count; i++) {
-                Debug.WriteLine("[" + _specieList[i].GenomeList.Count.ToString() + "," + specieStatsArr[i]._targetSizeInt + "] " );
+                //Debug.Write("[" + _specieList[i].GenomeList.Count.ToString() + "," + specieStatsArr[i]._targetSizeInt + "] " );
             }
             //Debug.WriteLine(String.Empty);
         }

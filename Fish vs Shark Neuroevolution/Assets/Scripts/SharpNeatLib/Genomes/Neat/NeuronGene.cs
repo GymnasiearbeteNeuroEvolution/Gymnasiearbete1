@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using SharpNeat.Network;
@@ -116,7 +123,7 @@ namespace SharpNeat.Genomes.Neat
         }
 
         /// <summary>
-        /// Optional auxiliary node state. Null if no aux state is present. 
+        /// Optional auxilliary node state. Null if no aux state is present. 
         /// Note. Radial Basis Function center and epsilon values are stored here.
         /// </summary>
         public double[] AuxState
@@ -145,7 +152,7 @@ namespace SharpNeat.Genomes.Neat
         #region Public Methods
 
         /// <summary>
-        /// Creates a copy of the current gene. Virtual method that can be overridden by sub-types.
+        /// Creates a copy of the current gene. Virtual method that can be overriden by sub-types.
         /// </summary>
         public virtual NeuronGene CreateCopy()
         {
@@ -153,7 +160,7 @@ namespace SharpNeat.Genomes.Neat
         }
 
         /// <summary>
-        /// Creates a copy of the current gene. Virtual method that can be overridden by sub-types.
+        /// Creates a copy of the current gene. Virtual method that can be overriden by sub-types.
         /// </summary>
         /// <param name="copyConnectivityData">Indicates whether or not top copy connectivity data for the neuron.</param>
         public virtual NeuronGene CreateCopy(bool copyConnectivityData)

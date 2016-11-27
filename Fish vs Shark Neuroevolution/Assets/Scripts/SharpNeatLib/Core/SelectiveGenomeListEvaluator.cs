@@ -1,16 +1,25 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
 
 namespace SharpNeat.Core
 {
@@ -59,7 +68,7 @@ namespace SharpNeat.Core
 
         /// <summary>
         /// Gets a value indicating whether some goal fitness has been achieved and that
-        /// the evolutionary algorithm/search should stop. This property's value can remain false
+        /// the the evolutionary algorithm/search should stop. This property's value can remain false
         /// to allow the algorithm to run indefinitely.
         /// </summary>
         public bool StopConditionSatisfied
@@ -71,7 +80,7 @@ namespace SharpNeat.Core
         /// Evaluates a list of genomes. Here we select the genomes to be evaluated before invoking
         /// _innerEvaluator to evaluate them.
         /// </summary>
-        public void Evaluate(IList<TGenome> genomeList)
+        public IEnumerator Evaluate(IList<TGenome> genomeList)
         {
             // Select the genomes to be evaluated. Place them in a temporary list of genomes to be 
             // evaluated after the genome selection loop. The selection is not performed in series
@@ -90,7 +99,8 @@ namespace SharpNeat.Core
             }
 
             // Evaluate selected genomes.
-            _innerEvaluator.Evaluate(filteredList);
+            yield return Coroutiner.StartCoroutine( _innerEvaluator.Evaluate(filteredList));
+           
         }
 
         /// <summary>

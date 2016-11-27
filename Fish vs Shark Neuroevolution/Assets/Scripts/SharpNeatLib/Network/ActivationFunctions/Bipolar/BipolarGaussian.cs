@@ -1,24 +1,30 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
-using Redzen.Numerics;
 using SharpNeat.Utility;
 
 namespace SharpNeat.Network
 {
     /// <summary>
-    /// Bipolar Gaussian activation function. Output range is -1 to 1, that is, the tails of the Gaussian
-    /// distribution curve tend towards -1 as abs(x) -> Infinity and the Gaussian peak is at y = 1.
+    /// Bipolar gaussian activation function. Output range is -1 to 1, that is, the tails of the gaussian
+    /// distribution curve tend towards -1 as abs(x) -> Infinity and the gaussian's peak is at y = 1.
     /// </summary>
     public class BipolarGaussian : IActivationFunction
     {
@@ -49,7 +55,7 @@ namespace SharpNeat.Network
         /// </summary>
         public string FunctionDescription
         {
-            get { return "Bipolar Gaussian.\r\nEffective xrange->[-1,1] yrange->[-1,1]"; }
+            get { return "Bipolar gaussian.\r\nEffective xrange->[-1,1] yrange->[-1,1]"; }
         }
 
         /// <summary>
@@ -82,7 +88,7 @@ namespace SharpNeat.Network
         /// For activation functions that accept auxiliary arguments; generates random initial values for aux arguments for newly
         /// added nodes (from an 'add neuron' mutation).
         /// </summary>
-        public double[] GetRandomAuxArgs(XorShiftRandom rng, double connectionWeightRange)
+        public double[] GetRandomAuxArgs(FastRandom rng, double connectionWeightRange)
         {
             throw new SharpNeatException("GetRandomAuxArgs() called on activation function that does not use auxiliary arguments.");
         }
@@ -90,7 +96,7 @@ namespace SharpNeat.Network
         /// <summary>
         /// Genetic mutation for auxiliary argument data.
         /// </summary>
-        public void MutateAuxArgs(double[] auxArgs, XorShiftRandom rng, ZigguratGaussianSampler gaussianSampler, double connectionWeightRange)
+        public void MutateAuxArgs(double[] auxArgs, FastRandom rng, ZigguratGaussianSampler gaussianSampler, double connectionWeightRange)
         {
             throw new SharpNeatException("MutateAuxArgs() called on activation function that does not use auxiliary arguments.");
         }

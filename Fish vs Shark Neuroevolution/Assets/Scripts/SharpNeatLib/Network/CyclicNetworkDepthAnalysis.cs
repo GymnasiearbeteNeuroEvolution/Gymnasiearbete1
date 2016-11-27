@@ -1,13 +1,20 @@
 ﻿/* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System.Collections.Generic;
 
@@ -19,7 +26,7 @@ namespace SharpNeat.Network
     /// the maximum number of hops from the depth 0 nodes, so where multiple paths exist to a node (potentially
     /// with different numbers of hops) we take the maximum number of hops as that node's depth. 
     /// 
-    /// The number of hops to a node ignores any cycles in the connectivity, that is, the number of hops is the 
+    /// The number of hops to a node ignores any cycles in the connectivity, that is, teh numebr of hops is the 
     /// number of hops in the direct routes to a node (no node in the pathway more than once, hence not including 
     /// any cycles)
     /// </summary>
@@ -94,7 +101,7 @@ namespace SharpNeat.Network
         {
             // Check if the node has already been encountered during the current traversal (have we followed a cycle in the connectivity).
             if(visitedNodeSet.Contains(nodeData._id)) 
-            {   // Don't follow cycles.
+            {   // Dont follow cycles.
                 return;
             }
 

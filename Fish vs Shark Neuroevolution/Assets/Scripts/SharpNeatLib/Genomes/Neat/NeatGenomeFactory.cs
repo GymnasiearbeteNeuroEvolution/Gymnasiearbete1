@@ -1,21 +1,25 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Redzen.Numerics;
-using Redzen.Sorting;
-using Redzen.Structures;
 using SharpNeat.Core;
 using SharpNeat.Network;
 using SharpNeat.Utility;
@@ -50,7 +54,7 @@ namespace SharpNeat.Genomes.Neat
                 = new KeyedCircularBuffer<uint,AddedNeuronGeneStruct>(__INNOVATION_HISTORY_BUFFER_SIZE);
 
         /// <summary>Random number generator associated with this factory.</summary>
-        protected readonly XorShiftRandom _rng = new XorShiftRandom();
+        protected readonly FastRandom _rng = new FastRandom();
         readonly ZigguratGaussianSampler _gaussianSampler = new ZigguratGaussianSampler();
 
         /// <summary>Activation function library associated with this factory.</summary>
@@ -289,7 +293,7 @@ namespace SharpNeat.Genomes.Neat
 
             // Create a copy of the list so that we can shuffle the items without modifying the original list.
             seedGenomeList = new List<NeatGenome>(seedGenomeList);
-            SortUtils.Shuffle(seedGenomeList, _rng);
+            Utilities.Shuffle(seedGenomeList, _rng);
 
             // Make exact copies of seed genomes and insert them into our new genome list.
             List<NeatGenome> genomeList = new List<NeatGenome>(length);
@@ -315,7 +319,7 @@ namespace SharpNeat.Genomes.Neat
         /// Creates a single randomly initialised genome. 
         /// A random set of connections are made form the input to the output neurons, the number of 
         /// connections made is based on the NeatGenomeParameters.InitialInterconnectionsProportion
-        /// which specifies the proportion of all possible input-output connections to be made in
+        /// which specifies the proportion of all posssible input-output connections to be made in
         /// initial genomes.
         /// 
         /// The connections that are made are allocated innovation IDs in a consistent manner across
@@ -382,11 +386,11 @@ namespace SharpNeat.Genomes.Neat
             }
 
             // Shuffle the array of possible connections.
-            SortUtils.Shuffle(connectionDefArr, _rng);
+            Utilities.Shuffle(connectionDefArr, _rng);
 
             // Select connection definitions from the head of the list and convert them to real connections.
             // We want some proportion of all possible connections but at least one (Connectionless genomes are not allowed).
-            int connectionCount = (int)NumericsUtils.ProbabilisticRound(
+            int connectionCount = (int)Utilities.ProbabilisticRound(
                 (double)connectionDefArr.Length * _neatGenomeParamsComplexifying.InitialInterconnectionsProportion,
                 _rng);
             connectionCount = Math.Max(1, connectionCount);
@@ -421,7 +425,7 @@ namespace SharpNeat.Genomes.Neat
 
         /// <summary>
         /// Supports debug/integrity checks. Checks that a given genome object's type is consistent with the genome factory. 
-        /// Typically the wrong type of object may occur where factories are sub-typed and not all of the relevant virtual methods are overridden.
+        /// Typically the wrong type of object may occur where factorys are subtyped and not all of the relevant virtual methods are overriden.
         /// Returns true if OK.
         /// </summary>
         public virtual bool CheckGenomeType(NeatGenome genome)
@@ -498,7 +502,7 @@ namespace SharpNeat.Genomes.Neat
         /// Note. The provided RNG is not thread safe, if concurrent use is required then sync locks
         /// are necessary or some other RNG mechanism.
         /// </summary>
-        public XorShiftRandom Rng
+        public FastRandom Rng
         {
             get { return _rng; }
         }
@@ -514,7 +518,7 @@ namespace SharpNeat.Genomes.Neat
         }
 
         /// <summary>
-        /// Gets some statistics associated with the factory and NEAT genomes that it has spawned.
+        /// Gets some statistics assocated with the factory and NEAT genomes that it has spawned.
         /// </summary>
         public NeatGenomeStats Stats
         {

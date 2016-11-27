@@ -1,20 +1,26 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-//System.Collections.Concurrent & System.Threading.Tasks has been removed since unity does not support either
 using System;
+// using System.Collections.Concurrent;
 using System.Collections.Generic;
+//using System.Threading.Tasks;
 using SharpNeat.Core;
-using System.Threading;
 
 namespace SharpNeat.DistanceMetrics
 {
@@ -253,7 +259,7 @@ namespace SharpNeat.DistanceMetrics
             //
             // We use SortedDictionary and not SortedList for performance. SortedList is fastest for insertion
             // only if the inserts are in order (sorted). However, this is generally not the case here because although
-            // coordinate IDs are sorted within the source CoordinateVectors, not all IDs exist within all CoordinateVectors
+            // cordinate IDs are sorted within the source CoordinateVectors, not all IDs exist within all CoordinateVectors
             // therefore a low ID may be presented to coordElemTotals after a higher ID.
             SortedDictionary<ulong, double[]> coordElemTotals = new SortedDictionary<ulong,double[]>();
 
@@ -283,21 +289,19 @@ namespace SharpNeat.DistanceMetrics
             KeyValuePair<ulong,double>[] centroidElemArr = new KeyValuePair<ulong,double>[coordElemTotals.Count];
             int i=0;
             foreach(KeyValuePair<ulong,double[]> coordElem in coordElemTotals)
-            {   // For speed we multiply by reciprocal instead of dividing by coordCount.
+            {   // For speed we multiply by reciprocol instead of dividing by coordCount.
                 centroidElemArr[i++] = new KeyValuePair<ulong,double>(coordElem.Key, coordElem.Value[0] * coordCountReciprocol);
             }
 
             // Use the new list of elements to construct a centroid CoordinateVector.
             return new CoordinateVector(centroidElemArr);
         }
-
+        /*
         /// <summary>
         /// Parallelized version of CalculateCentroid().
         /// </summary>
         public CoordinateVector CalculateCentroidParallel(IList<CoordinateVector> coordList)
         {
-            ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
-            bool execute = false;
             // Special case - one item in list, it *is* the centroid.
             if (1 == coordList.Count)
             {
@@ -309,12 +313,11 @@ namespace SharpNeat.DistanceMetrics
             // calculate the component-wise mean.
 
             // ConcurrentDictionary provides a low-locking strategy that greatly improves performance here 
-            // compared to using mutual exclusion locks or even ReadWriterLock(s). 
-            // CHANGED! Unity does not support System.Collections.Concurrent and therefore we went with ReadWriterLocks.
-            Dictionary<ulong,double[]> coordElemTotals = new Dictionary<ulong, double[]>();
-            // Loop over coords.
+            // compared to using mutual exclusion locks or even ReadWriterLock(s).
+            ConcurrentDictionary<ulong,double[]> coordElemTotals = new ConcurrentDictionary<ulong, double[]>();
 
-            foreach(CoordinateVector coord in coordList)
+            // Loop over coords.
+            Parallel.ForEach(coordList, delegate(CoordinateVector coord)
             {
                 // Loop over each element within the current coord.
                 foreach (KeyValuePair<ulong, double> coordElem in coord.CoordArray)
@@ -330,53 +333,30 @@ namespace SharpNeat.DistanceMetrics
                     }
 
                     double[] doubleWrapper;
-
                     if (coordElemTotals.TryGetValue(coordElem.Key, out doubleWrapper))
                     {   // By locking just the specific object that holds the value we are incrementing
                         // we greatly reduce the amount of lock contention.
-                        rwLock.EnterWriteLock();
-                        try
+                        lock(doubleWrapper)
                         {
                             doubleWrapper[0] += coordElem.Value;
-                        }
-                        finally
-                        {
-                            rwLock.ExitWriteLock();
                         }
                     }
                     else
                     {
                         doubleWrapper = new double[] { coordElem.Value };
-                        rwLock.EnterReadLock();
-                        try
+                        if (!coordElemTotals.TryAdd(coordElem.Key, doubleWrapper))
                         {
-                            if (coordElemTotals.ContainsKey(coordElem.Key))
+                            if(coordElemTotals.TryGetValue(coordElem.Key, out doubleWrapper))
                             {
-                                if (coordElemTotals.TryGetValue(coordElem.Key, out doubleWrapper))
+                                lock (doubleWrapper)
                                 {
-                                    execute = true;
+                                    doubleWrapper[0] += coordElem.Value;
                                 }
                             }
                         }
-                        finally
-                        {
-                            rwLock.ExitReadLock();
-                        }
-                    }
-                    if(execute)
-                    {
-                        rwLock.EnterWriteLock();
-                        try
-                        {
-                            doubleWrapper[0] += coordElem.Value;
-                        }
-                        finally
-                        {
-                            rwLock.ExitWriteLock();
-                        }
                     }
                 }
-            }
+            });
 
             // Put the unique coord elems from coordElemTotals into a list, dividing each element's value
             // by the total number of coords as we go.
@@ -384,7 +364,7 @@ namespace SharpNeat.DistanceMetrics
             KeyValuePair<ulong, double>[] centroidElemArr = new KeyValuePair<ulong, double>[coordElemTotals.Count];
             int i = 0;
             foreach (KeyValuePair<ulong, double[]> coordElem in coordElemTotals)
-            {   // For speed we multiply by reciprocal instead of dividing by coordCount.
+            {   // For speed we multiply by reciprocol instead of dividing by coordCount.
                 centroidElemArr[i++] = new KeyValuePair<ulong, double>(coordElem.Key, coordElem.Value[0] * coordCountReciprocol);
             }
 
@@ -403,7 +383,7 @@ namespace SharpNeat.DistanceMetrics
             // Use the new list of elements to construct a centroid CoordinateVector.
             return new CoordinateVector(centroidElemArr);
         }
-
+        */
         #endregion
     }
 }

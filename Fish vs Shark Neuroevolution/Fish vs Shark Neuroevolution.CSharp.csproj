@@ -82,9 +82,12 @@
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\CleaningUp\MethodExtension.cs" />
     <Compile Include="Assets\Scripts\CleaningUp\Singleton.cs" />
-    <Compile Include="Assets\Scripts\CleaningUp\Toolbox.cs" />
-    <Compile Include="Assets\Scripts\Fish.cs" />
-    <Compile Include="Assets\Scripts\FishManager.cs" />
+    <Compile Include="Assets\Scripts\FishTest\Fish.cs" />
+    <Compile Include="Assets\Scripts\FishTest\FishEvaluator.cs" />
+    <Compile Include="Assets\Scripts\FishTest\FishExperiment.cs" />
+    <Compile Include="Assets\Scripts\FishTest\FishManager.cs" />
+    <Compile Include="Assets\Scripts\FishTest\FishSettings.cs" />
+    <Compile Include="Assets\Scripts\FishTest\FishStats.cs" />
     <Compile Include="Assets\Scripts\MathHelper.cs" />
     <Compile Include="Assets\Scripts\Redzen\IO\FileByteArray.cs" />
     <Compile Include="Assets\Scripts\Redzen\IO\MemoryBlockStream.cs" />
@@ -124,8 +127,11 @@
     <Compile Include="Assets\Scripts\SharpNeatLib\Core\SelectiveGenomeListEvaluator.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Core\SerialGenomeListEvaluator.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Core\Specie.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Core\UnityListEvaluator.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Core\UnityParallelListEvaluator.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Core\UpdateMode.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Core\UpdateScheme.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Coroutiner.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Decoders\CyclicNetworkFactory.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Decoders\FastAcyclicNetworkFactory.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Decoders\FastCyclicNetworkFactory.cs" />
@@ -173,6 +179,7 @@
     <Compile Include="Assets\Scripts\SharpNeatLib\Genomes\Neat\NeuronGene.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Genomes\Neat\NeuronGeneList.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Genomes\RbfNeat\RbfGenomeFactory.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\NEATController.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\ActivationFunctions\ActivationFunctionInfo.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\ActivationFunctions\Bipolar\BipolarGaussian.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\ActivationFunctions\Bipolar\BipolarSigmoid.cs" />
@@ -195,6 +202,11 @@
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\CyclicNetworkDepthAnalysis.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\CyclicNetworkTest.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\DefaultActivationFunctionLibrary.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Network\Domains\ExperimentUtils.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Network\Domains\INeatExperiment.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Network\Domains\IntPoint.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Network\Domains\PolarPoint.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Network\Domains\XmlUtils.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\IActivationFunction.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\IActivationFunctionLibrary.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Network\IConnectionList.cs" />
@@ -237,12 +249,24 @@
     <Compile Include="Assets\Scripts\SharpNeatLib\SpeciationStrategies\ParallelKMeansClusteringStrategy.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\SpeciationStrategies\RandomClusteringStrategy.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\SpeciationStrategies\SpeciationUtils.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\UnitController.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\BoxMullerGaussianSampler.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\CircularBuffer.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\DoubleCircularBufferWithStats.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\FastRandom.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\FrequencyDistributionData.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\KeyedCircularBuffer.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Utility\Point2DDouble.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\RouletteWheel.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\RouletteWheelLayout.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Utility\UInt32IdGenerator.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Utility\Utilities.cs" />
     <Compile Include="Assets\Scripts\SharpNeatLib\Utility\XmlIoUtils.cs" />
+    <Compile Include="Assets\Scripts\SharpNeatLib\Utility\ZigguratGaussianSampler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Resources\experiment.config.xml" />
     <None Include="Assets\Scripts\Redzen\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
