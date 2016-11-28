@@ -10,7 +10,7 @@ using System.IO;
 
 public class NEATController : MonoBehaviour {
 
-    const int NUM_INPUTS = 5;
+    const int NUM_INPUTS = 4;
     const int NUM_OUTPUTS = 2;
 
     public int Trials;
@@ -186,7 +186,7 @@ public class NEATController : MonoBehaviour {
     {
         int rand = UnityEngine.Random.Range(0, FishSettings.Instance.MaxFish);
         //Vector3 pos = new Vector3(fishStartPos[rand].x,fishStartPos[rand].y);
-        obj = Instantiate(Unit, Unit.transform.position, Unit.transform.rotation) as GameObject;
+        obj = Instantiate(Unit, transform.position, Unit.transform.rotation) as GameObject;
         UnitController controller = obj.GetComponent<UnitController>();
         
         ControllerMap.Add(box, controller);
@@ -203,7 +203,7 @@ public class NEATController : MonoBehaviour {
 
     public void RunBest()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 3;
 
         NeatGenome genome = null;
 
@@ -225,7 +225,7 @@ public class NEATController : MonoBehaviour {
         // Decode the genome into a phenome (neural network).
         var phenome = genomeDecoder.Decode(genome);
 
-        GameObject obj = Instantiate(Unit, Unit.transform.position, Unit.transform.rotation) as GameObject;
+        GameObject obj = Instantiate(Unit, transform.position, Unit.transform.rotation) as GameObject;
         UnitController controller = obj.GetComponent<UnitController>();
 
         ControllerMap.Add(phenome, controller);

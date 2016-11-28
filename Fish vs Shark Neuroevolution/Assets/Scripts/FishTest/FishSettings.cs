@@ -34,6 +34,10 @@ public class FishSettings : Singleton<FishSettings>
 
     public float TurnSpeed = 180f;
 
+    public float JumpSpeed = 20f;
+
+    public int TimeScale = 25;
+
     public int Generation = 1;
     bool IsWithinBounds = true;
     public float SensorRange = 10;
