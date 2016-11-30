@@ -1,19 +1,27 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace SharpNeat.EvolutionAlgorithms.ComplexityRegulation
 {
     /// <summary>
     /// Default complexity regulation strategy. 
-    /// This strategy provides a choice of hard/absolute complexity ceiling or a ceiling relative to the 
+    /// This strategy provides a choice of hard/absolute comelity ceiling or a ceiling relative to the 
     /// complexity at the end of the most recent simplification phase.
     /// The strategy transitions from complexifying to simplifying when the ceiling is reached. 
     /// Transitioning from simplifying to complexifying occurs when complexity is no longer falling
@@ -25,7 +33,7 @@ namespace SharpNeat.EvolutionAlgorithms.ComplexityRegulation
         #region Consts
 
         /// <summary>
-        /// The minimum number of generations we stay within simplification mode.
+        /// The minimum number of generations we stay within simplifcation mode.
         /// </summary>
         const int MinSimplifcationGenerations = 10;
 
@@ -57,7 +65,7 @@ namespace SharpNeat.EvolutionAlgorithms.ComplexityRegulation
         ComplexityRegulationMode _currentMode;
 
         /// <summary>
-        /// The generation at which the last transition occurred.
+        /// The generation at which the last transition occured.
         /// </summary>
         uint _lastTransitionGeneration;
 
@@ -108,7 +116,7 @@ namespace SharpNeat.EvolutionAlgorithms.ComplexityRegulation
                 }
             }
             else
-            {   // Currently simplifying. Test if simplification (ongoing reduction in complexity) has stalled.
+            {   // Currently simplifying. Test if simplication (ongoing reduction in complexity) has stalled.
                 // We allow simplification to progress for a few generations before testing of it has stalled, this allows
                 // a lead in time for the effects of simplification to occur.
                 // In addition we do not switch to complexifying if complexity is above the currently defined ceiling.

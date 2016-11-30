@@ -1,20 +1,26 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Redzen.Numerics;
-using Redzen.Sorting;
 using SharpNeat.Core;
+using SharpNeat.Utility;
 
 namespace SharpNeat.SpeciationStrategies
 {
@@ -28,7 +34,7 @@ namespace SharpNeat.SpeciationStrategies
     public class RandomClusteringStrategy<TGenome> : ISpeciationStrategy<TGenome>
         where TGenome : class, IGenome<TGenome>
     {
-        readonly XorShiftRandom _rng = new XorShiftRandom();
+        readonly FastRandom _rng = new FastRandom();
        
         /// <summary>
         /// Speciates the genomes in genomeList into the number of species specified by specieCount
@@ -36,7 +42,7 @@ namespace SharpNeat.SpeciationStrategies
         /// </summary>
         public IList<Specie<TGenome>> InitializeSpeciation(IList<TGenome> genomeList, int specieCount)
         {
-            // Create the empty specie objects.
+            // Craete the empty specie objects.
             List<Specie<TGenome>> specieList = new List<Specie<TGenome>>(specieCount);
             int capacity = (int)Math.Ceiling((double)genomeList.Count/(double)specieCount);
             for(int i=0; i<specieCount; i++) {
@@ -52,7 +58,7 @@ namespace SharpNeat.SpeciationStrategies
         /// Speciates the genomes in genomeList into the provided species. It is assumed that
         /// the genomeList represents all of the required genomes and that the species are currently empty.
         /// 
-        /// This method can be used for initialization or completely re-speciating an existing genome population.
+        /// This method can be used for initialization or completely respeciating an existing genome population.
         /// </summary>
         public void SpeciateGenomes(IList<TGenome> genomeList, IList<Specie<TGenome>> specieList)
         {
@@ -61,7 +67,7 @@ namespace SharpNeat.SpeciationStrategies
 
             // Make a copy of genomeList and shuffle the items.
             List<TGenome> gList = new List<TGenome>(genomeList);
-            SortUtils.Shuffle(gList, _rng);
+            Utilities.Shuffle(gList, _rng);
 
             // We evenly distribute genomes between species. 
             // Calc how many genomes per specie. Baseline number given by integer division rounding down (by truncating fractional part).
@@ -87,7 +93,7 @@ namespace SharpNeat.SpeciationStrategies
             for(int i=0; i<specieCount; i++) {
                 specieIdxArr[i] = i;
             }
-            SortUtils.Shuffle(specieIdxArr, _rng);
+            Utilities.Shuffle(specieIdxArr, _rng);
 
             for(int i=0; i<specieCount && genomeIdx < genomeCount; i++, genomeIdx++) 
             {
@@ -114,7 +120,7 @@ namespace SharpNeat.SpeciationStrategies
 
             // Make a copy of genomeList and shuffle the items.
             List<TGenome> gList = new List<TGenome>(genomeList);
-            SortUtils.Shuffle(gList, _rng);
+            Utilities.Shuffle(gList, _rng);
 
             // Count how many genomes we have in total.
             int genomeCount = gList.Count;
@@ -175,7 +181,7 @@ namespace SharpNeat.SpeciationStrategies
             for(int i=0; i<specieCount; i++) {
                 specieIdxArr[i] = i;
             }
-            SortUtils.Shuffle(specieIdxArr, _rng);
+            Utilities.Shuffle(specieIdxArr, _rng);
 
             for(int i=0; i<specieCount && genomeIdx < genomeCount; i++, genomeIdx++) 
             {

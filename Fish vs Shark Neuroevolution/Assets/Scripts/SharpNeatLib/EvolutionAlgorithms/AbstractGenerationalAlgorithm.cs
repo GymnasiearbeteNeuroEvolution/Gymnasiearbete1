@@ -1,22 +1,30 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
-
- //Log4NET has been removed and been replaced with SharpNeatException 
-// System.Threading.Tasks has been removed since it's not supported in unity
 
 using System;
 using System.Collections.Generic;
 using System.Threading;
+//using log4net;
 using SharpNeat.Core;
+using UnityEngine;
+using System.Collections;
+//using System.Threading.Tasks;
 
 // Disable missing comment warnings for non-private variables.
 #pragma warning disable 1591
@@ -24,12 +32,14 @@ using SharpNeat.Core;
 namespace SharpNeat.EvolutionAlgorithms
 {
     /// <summary>
-    /// Abstract class providing some common/baseline data and methods for implementations of IEvolutionAlgorithm.
+    /// Abstract class providing some common/baseline data and methods for implementions of IEvolutionAlgorithm.
     /// </summary>
     /// <typeparam name="TGenome">The genome type that the algorithm will operate on.</typeparam>
     public abstract class AbstractGenerationalAlgorithm<TGenome> : IEvolutionAlgorithm<TGenome>
         where TGenome : class, IGenome<TGenome>
     {
+     //   private static readonly ILog __log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         #region Instance Fields
 
         protected IGenomeListEvaluator<TGenome> _genomeListEvaluator;
@@ -48,7 +58,7 @@ namespace SharpNeat.EvolutionAlgorithms
         long _prevUpdateTimeTick;
 
         // Misc working variables.
-        Thread _algorithmThread;
+        
         bool _pauseRequestFlag;
         readonly AutoResetEvent _awaitPauseEvent = new AutoResetEvent(false);
         readonly AutoResetEvent _awaitRestartEvent = new AutoResetEvent(false);
@@ -58,7 +68,7 @@ namespace SharpNeat.EvolutionAlgorithms
         #region Events
 
         /// <summary>
-        /// Notifies listeners that some state change has occurred.
+        /// Notifies listeners that some state change has occured.
         /// </summary>
         public event EventHandler UpdateEvent;
         /// <summary>
@@ -161,15 +171,16 @@ namespace SharpNeat.EvolutionAlgorithms
         /// </summary>
         public void StartContinue()
         {
+            //print("StartContinue");
             // RunState must be Ready or Paused.
             if(RunState.Ready == _runState)
             {   // Create a new thread and start it running.
-                _algorithmThread = new Thread(AlgorithmThreadMethod);
-                _algorithmThread.IsBackground = true;
-                _algorithmThread.Priority = ThreadPriority.BelowNormal;
+             //   print("RunState ready");
                 _runState = RunState.Running;
+                Coroutiner.StartCoroutine( AlgorithmThreadMethod());
+             //   print("Continue from AlgorithmThreadMethod in StartContinue");
                 OnUpdateEvent();
-                _algorithmThread.Start();
+                
             }
             else if(RunState.Paused == _runState)
             {   // Thread is paused. Resume execution.
@@ -179,7 +190,7 @@ namespace SharpNeat.EvolutionAlgorithms
             }
             else if(RunState.Running == _runState)
             {   // Already running. Log a warning.
-                throw new SharpNeatException("StartContinue() called but algorithm is already running.");
+                //__log.Warn("StartContinue() called but algorithm is already running.");
             }
             else
             {
@@ -206,7 +217,7 @@ namespace SharpNeat.EvolutionAlgorithms
                 _pauseRequestFlag = true;
             }
             else {
-                throw new SharpNeatException("RequestPause() called but algorithm is not running.");
+                //__log.Warn("RequestPause() called but algorithm is not running.");
             }
         }
 
@@ -227,7 +238,7 @@ namespace SharpNeat.EvolutionAlgorithms
             }
             else 
             {
-                throw new SharpNeatException("RequestPauseAndWait() called but algorithm is not running.");
+                //__log.Warn("RequestPauseAndWait() called but algorithm is not running.");
             }
         }
 
@@ -235,47 +246,49 @@ namespace SharpNeat.EvolutionAlgorithms
 
         #region Private/Protected Methods [Evolution Algorithm]
 
-        private void AlgorithmThreadMethod()
+        private IEnumerator AlgorithmThreadMethod()
         {
-            try
+            //print("AlgorithThreadMethod()");
+            //try
+            //{
+            _prevUpdateGeneration = 0;
+            _prevUpdateTimeTick = DateTime.Now.Ticks;
+
+            for (; ; )
             {
-                _prevUpdateGeneration = 0;
-                _prevUpdateTimeTick = DateTime.Now.Ticks;
-
-                for(;;)
+                _currentGeneration++;
+              //  print("currentGeneration: " + _currentGeneration);
+                yield return Coroutiner.StartCoroutine(PerformOneGeneration());
+           //     print("Performed one generation");
+                if (UpdateTest())
                 {
-                    _currentGeneration++;
-                    PerformOneGeneration();
+                    _prevUpdateGeneration = _currentGeneration;
+                    _prevUpdateTimeTick = DateTime.Now.Ticks;
+                    OnUpdateEvent();
+                }
 
-                    if(UpdateTest())
-                    {
-                        _prevUpdateGeneration = _currentGeneration;
-                        _prevUpdateTimeTick = DateTime.Now.Ticks;
-                         OnUpdateEvent();
-                    }
-                
-                    // Check if a pause has been requested. 
-                    // Access to the flag is not thread synchronized, but it doesn't really matter if
-                    // we miss it being set and perform one other generation before pausing.
-                    if(_pauseRequestFlag || _genomeListEvaluator.StopConditionSatisfied)
-                    {
-                        // Signal to any waiting thread that we are pausing
-                        _awaitPauseEvent.Set();
+                // Check if a pause has been requested. 
+                // Access to the flag is not thread synchronized, but it doesn't really matter if
+                // we miss it being set and perform one other generation before pausing.
+                if (_pauseRequestFlag || _genomeListEvaluator.StopConditionSatisfied)
+                {
+                    // Signal to any waiting thread that we are pausing
+                   // _awaitPauseEvent.Set();
 
-                        // Reset the flag. Update RunState and notify any listeners of the state change.
-                        _pauseRequestFlag = false;
-                        _runState = RunState.Paused;
-                        OnUpdateEvent();
-                        OnPausedEvent();
-
-                        // Wait indefinitely for a signal to wake up and continue.
-                        _awaitRestartEvent.WaitOne();
-                    }
+                    // Reset the flag. Update RunState and notify any listeners of the state change.
+                 //   _pauseRequestFlag = false;
+                 //   _runState = RunState.Paused;
+                    OnUpdateEvent();
+                    OnPausedEvent();
+                    break;
+                    // Wait indefinitely for a signal to wake up and continue.
+                 //   _awaitRestartEvent.WaitOne();
                 }
             }
-            catch(ThreadAbortException)
-            {   // Quietly exit thread.
-            }
+            //}
+            //catch(ThreadAbortException)
+            //{   // Quietly exit thread.
+            //}
         }
 
         /// <summary>
@@ -299,7 +312,7 @@ namespace SharpNeat.EvolutionAlgorithms
                     UpdateEvent(this, EventArgs.Empty);
                 }
                 catch(Exception ex) {
-                    throw new SharpNeatException("UpdateEvent listener threw exception", ex);
+                    //__log.Error("UpdateEvent listener threw exception", ex);
                 }
             }
         }
@@ -313,7 +326,7 @@ namespace SharpNeat.EvolutionAlgorithms
                     PausedEvent(this, EventArgs.Empty);
                 }
                 catch(Exception ex) {
-                    throw new SharpNeatException("PausedEvent listener threw exception", ex);
+                    //__log.Error("PausedEvent listener threw exception", ex);
                 }
             }
         }
@@ -321,7 +334,7 @@ namespace SharpNeat.EvolutionAlgorithms
         /// <summary>
         /// Progress forward by one generation. Perform one generation/cycle of the evolution algorithm.
         /// </summary>
-        protected abstract void PerformOneGeneration();
+        protected abstract IEnumerator PerformOneGeneration();
 
         #endregion
     }

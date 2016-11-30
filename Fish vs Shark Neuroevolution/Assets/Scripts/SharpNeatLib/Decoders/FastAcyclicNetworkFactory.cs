@@ -1,13 +1,20 @@
 ﻿/* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
 using System.Collections.Generic;
@@ -32,8 +39,8 @@ namespace SharpNeat.Decoders
             Debug.Assert(!CyclicNetworkTest.IsNetworkCyclic(networkDef), "Attempt to decode a cyclic network into a FastAcyclicNetwork.");
 
             // Determine the depth of each node in the network. 
-            // Node depths are used to separate the nodes into depth based layers, these layers can then be
-            // used to determine the order in which signals are propagated through the network.
+            // Node depths are used to seperate the nodes into depth based layers, these layers can then be
+            // used to determine the order in which signals are propogated through the network.
             AcyclicNetworkDepthAnalysis depthAnalysis = new AcyclicNetworkDepthAnalysis();
             NetworkDepthInfo netDepthInfo = depthAnalysis.CalculateNodeDepths(networkDef);
 
@@ -60,9 +67,9 @@ namespace SharpNeat.Decoders
             // Array of live node indexes indexed by their index in the original network definition. This allows us to 
             // locate the position of input and output nodes in their new positions in the live network data structures.
             int[] newIdxByDefinitionIdx = new int[nodeCount];
-
+            
             // Dictionary of live node indexes keyed by node ID. This allows us to convert the network definition connection
-            // endpoints from node IDs to indexes into the live/runtime network data structures.
+            // endpoints from referring to node IDs to indexes to node data in the live network data structures.
             Dictionary<uint,int> newIdxById = new Dictionary<uint,int>(nodeCount);
 
             // Populate both the lookup array and dictionary.
@@ -73,7 +80,7 @@ namespace SharpNeat.Decoders
                 newIdxById.Add(nodeInfo._nodeId, i);
             }
 
-            // Make a copy of the sub-range of newIdxByDefinitionIdx that represents the output nodes.
+            // Make a copy of the sub-range of newIdxByDefinitionIdx that respresents the output nodes.
             int outputCount = networkDef.OutputNodeCount;
             int[] outputNeuronIdxArr = new int[outputCount];
             // Note. 'inputAndBiasCount' holds the index of the first output node.
@@ -85,7 +92,7 @@ namespace SharpNeat.Decoders
             double[][] nodeAuxArgsArray = new double[nodeCount][];
             for(int i=0; i<nodeCount; i++) 
             {
-                int definitionIdx = nodeInfoByDepth[i]._definitionIdx;
+                int definitionIdx = newIdxByDefinitionIdx[i];
                 nodeActivationFnArr[i] = activationFnLibrary.GetFunction(nodeList[definitionIdx].ActivationFnId);
                 nodeAuxArgsArray[i] = nodeList[definitionIdx].AuxState;
             }
@@ -173,7 +180,7 @@ namespace SharpNeat.Decoders
 
             public int Compare(NodeInfo x, NodeInfo y)
             {
-                // Use fast method of comparison (subtraction) instead of performing multiple tests. 
+                // Use fast method of comparison (subtraction) instead of perfoming multiple tests. 
                 // We can do this safely because this delta will always be well within the range on an Int32.
                 // (If you have a network with a greater depth range then you have other problems).
                 return x._nodeDepth - y._nodeDepth;

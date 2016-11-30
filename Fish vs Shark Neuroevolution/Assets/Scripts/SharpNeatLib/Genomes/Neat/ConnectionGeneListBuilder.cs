@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System.Collections.Generic;
 using SharpNeat.Network;
@@ -81,8 +88,8 @@ namespace SharpNeat.Genomes.Neat
         /// Add a ConnectionGene to the builder, but only if the connection is not already present (as determined by it's neuron ID endpoints).
         /// </summary>
         /// <param name="connectionGene">The connection to add.</param>
-        /// <param name="parentGenome">The connection's parent genome. This is used to obtain NeuronGene(s) for the connection endpoints.</param>
-        /// <param name="overwriteExisting">A flag that indicates if this connection should take precedence over an existing connection with
+        /// <param name="parentGenome">The conenction's parent genome. This is used to obtain NeuronGene(s) for the connection endpoints.</param>
+        /// <param name="overwriteExisting">A flag that indicates if this connection should take precedence oevr an existing connection with
         /// the same endpoints.</param>
         public void TryAddGene(ConnectionGene connectionGene, NeatGenome parentGenome, bool overwriteExisting)
         {

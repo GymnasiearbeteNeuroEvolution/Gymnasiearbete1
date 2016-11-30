@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace SharpNeat.EvolutionAlgorithms
@@ -46,7 +53,7 @@ namespace SharpNeat.EvolutionAlgorithms
         int _bestFitnessMovingAverageHistoryLength;
         int _meanSpecieChampFitnessMovingAverageHistoryLength;
         int _complexityMovingAverageHistoryLength;
-        
+
         #endregion
 
         #region Constructor
@@ -101,7 +108,7 @@ namespace SharpNeat.EvolutionAlgorithms
             get { return _specieCount; }
             set { _specieCount = value; }
         }
-        
+
         /// <summary>
         /// Gets or sets the elitism proportion. 
         /// We sort specie genomes by fitness and keep the top N%, the other genomes are
@@ -206,8 +213,8 @@ namespace SharpNeat.EvolutionAlgorithms
         public NeatEvolutionAlgorithmParameters CreateSimplifyingParameters()
         {
             // Make a copy of the current 'complexifying' parameters (as required by complexity regulation)
-            // and modify the copy to be suitable for simplification. Basically we disable sexual reproduction
-            // while in simplifying mode to prevent proliferation of structure through sexual reproduction.
+            // and modify the copy to be suitable for simplifcation. Basically we disable sexual reproduction
+            // whle in simplifying mode to prevent proliferation of structure through sexual reproduction.
             NeatEvolutionAlgorithmParameters eaParams = new NeatEvolutionAlgorithmParameters(this);
             eaParams._offspringAsexualProportion = 1.0;
             eaParams._offspringSexualProportion = 0.0;

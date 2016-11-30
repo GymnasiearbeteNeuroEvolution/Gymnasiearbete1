@@ -1,17 +1,24 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Redzen.Numerics;
 using SharpNeat.Network;
+using SharpNeat.Utility;
 
 namespace SharpNeat.Genomes.Neat
 {
@@ -29,11 +36,16 @@ namespace SharpNeat.Genomes.Neat
         const double DefaultDisjointExcessGenesRecombineProbability = 0.1;
 
         // High level mutation probabilities
-        const double DefaultConnectionWeightMutationProbability = 0.94;
-        const double DefaultAddNodeMutationProbability = 0.01;
-        const double DefaultAddConnectionMutationProbability = 0.025;
+        const double DefaultConnectionWeightMutationProbability = 0.988;
+        //const double DefaultAddNodeMutationProbability = 0.001;
+        //const double DefaultAddConnectionMutationProbability = 0.01;
+        //const double DefaultNodeAuxStateMutationProbability = 0.00;
+        //const double DefaultDeleteConnectionMutationProbability = 0.001;
+        //const double DefaultConnectionWeightMutationProbability = 0.888;
+        const double DefaultAddNodeMutationProbability = 0.005;
+        const double DefaultAddConnectionMutationProbability = 0.05;
         const double DefaultNodeAuxStateMutationProbability = 0.00;
-        const double DefaultDeleteConnectionMutationProbability = 0.025;
+        const double DefaultDeleteConnectionMutationProbability = 0.004;
 
         #endregion
 
@@ -53,11 +65,11 @@ namespace SharpNeat.Genomes.Neat
         double _deleteConnectionMutationProbability;
 
         // RouletteWheelLayout representing the above five mutation probabilities.
-        DiscreteDistribution _rouletteWheelLayout;
+        RouletteWheelLayout _rouletteWheelLayout;
 
         // Alternative RouletteWheelLayout used when we wish to avoid deletion mutations, e.g. when 
         // mutating a genome with just one connection.
-        DiscreteDistribution _rouletteWheelLayoutNonDestructive;
+        RouletteWheelLayout _rouletteWheelLayoutNonDestructive;
 
         /// <summary>
         /// A list of ConnectionMutationInfo objects that drives the types of connection mutation
@@ -113,8 +125,8 @@ namespace SharpNeat.Genomes.Neat
             _nodeAuxStateMutationProbability            = copyFrom._nodeAuxStateMutationProbability;
             _deleteConnectionMutationProbability        = copyFrom._deleteConnectionMutationProbability;
 
-            _rouletteWheelLayout = new DiscreteDistribution(copyFrom._rouletteWheelLayout);
-            _rouletteWheelLayoutNonDestructive = new DiscreteDistribution(copyFrom._rouletteWheelLayoutNonDestructive);
+            _rouletteWheelLayout = new RouletteWheelLayout(copyFrom._rouletteWheelLayout);
+            _rouletteWheelLayoutNonDestructive = new RouletteWheelLayout(copyFrom._rouletteWheelLayoutNonDestructive);
             
             _connectionMutationInfoList = new ConnectionMutationInfoList(copyFrom._connectionMutationInfoList);
             _connectionMutationInfoList.Initialize();
@@ -127,7 +139,7 @@ namespace SharpNeat.Genomes.Neat
 
         // TODO: rename to AcyclicOnly?
         /// <summary>
-        /// Gets or sets a boolean that indicates if NEAT should produce only feed-forward networks (no recurrent/cyclic connection paths).
+        /// Gets or sets a boolean that indicates if NEAT should produce only feedforward networks (no recurrent/cyclic connection paths).
         /// </summary>
         public bool FeedforwardOnly
         {
@@ -169,7 +181,8 @@ namespace SharpNeat.Genomes.Neat
 
         /// <summary>
         /// Gets or sets the probability that all excess and disjoint genes are copied into an offspring genome
-        /// during sexual reproduction. Currently the excess/disjoint genes are copied in an all or nothing strategy.
+        /// during sexual reproduction. Currently the execss/disjoint genes are copied in an all or nothing 
+        /// strategy.
         /// </summary>
         public double DisjointExcessGenesRecombinedProbability
         {
@@ -265,7 +278,7 @@ namespace SharpNeat.Genomes.Neat
         /// <summary>
         /// Gets a RouletteWheelLayout that represents the probabilities of each type of genome mutation.
         /// </summary>
-        public DiscreteDistribution RouletteWheelLayout
+        public RouletteWheelLayout RouletteWheelLayout
         {
             get { return _rouletteWheelLayout; }
         }
@@ -274,7 +287,7 @@ namespace SharpNeat.Genomes.Neat
         /// Gets an alternative RouletteWheelLayout for use when we wish to avoid deletion mutations, 
         /// e.g. when  mutating a genome with just one connection.
         /// </summary>
-        public DiscreteDistribution RouletteWheelLayoutNonDestructive
+        public RouletteWheelLayout RouletteWheelLayoutNonDestructive
         {
             get { return _rouletteWheelLayoutNonDestructive; }
         }
@@ -301,7 +314,7 @@ namespace SharpNeat.Genomes.Neat
 
         #region Private Methods
 
-        private DiscreteDistribution CreateRouletteWheelLayout()
+        private RouletteWheelLayout CreateRouletteWheelLayout()
         {
             double[] probabilities = new double[] 
                 {
@@ -311,10 +324,10 @@ namespace SharpNeat.Genomes.Neat
                     _nodeAuxStateMutationProbability,
                     _deleteConnectionMutationProbability
                 };
-            return new DiscreteDistribution(probabilities);
+            return new RouletteWheelLayout(probabilities);
         }
 
-        private DiscreteDistribution CreateRouletteWheelLayout_NonDestructive()
+        private RouletteWheelLayout CreateRouletteWheelLayout_NonDestructive()
         {
             double[] probabilities = new double[] 
                 {
@@ -323,7 +336,7 @@ namespace SharpNeat.Genomes.Neat
                     _addConnectionMutationProbability,
                     _nodeAuxStateMutationProbability
                 };
-            return new DiscreteDistribution(probabilities);
+            return new RouletteWheelLayout(probabilities);
         }
 
         /// <summary>
@@ -331,29 +344,51 @@ namespace SharpNeat.Genomes.Neat
         /// </summary>
         private ConnectionMutationInfoList CreateConnectionWeightMutationScheme_Default()
         {
-            ConnectionMutationInfoList list = new ConnectionMutationInfoList(6);
+            ConnectionMutationInfoList list = new ConnectionMutationInfoList(12);
 
-            // Gaussian jiggle with sigma=0.01 (most values between +-0.02)
+            // Gaussian jiggle with sigma=0.02 (most values between +-0.04)
             // Jiggle 1,2 and 3 connections respectively.
-            list.Add(new ConnectionMutationInfo(0.5985, ConnectionPerturbanceType.JiggleGaussian,
-                                                ConnectionSelectionType.FixedQuantity, 0.0, 1, 0.0, 0.01));
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 1, 0.0, 0.02));
 
-            list.Add(new ConnectionMutationInfo(0.2985, ConnectionPerturbanceType.JiggleGaussian,
-                                                ConnectionSelectionType.FixedQuantity, 0.0, 2, 0.0, 0.01));
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 2, 0.0, 0.02));
 
-            list.Add(new ConnectionMutationInfo(0.0985, ConnectionPerturbanceType.JiggleGaussian,
-                                                ConnectionSelectionType.FixedQuantity, 0.0, 3, 0.0, 0.01));
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 3, 0.0, 0.02));
+
+            // Jiggle 2% of connections.
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.Proportional, 0.02, 0, 0.0, 0.02));
+
+            // Gaussian jiggle with sigma=1 (most values between +-2)
+            // Jiggle 1,2 and 3 connections respectively.
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 1, 0.0, 1));
+
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 2, 0.0, 1));
+
+            list.Add(new ConnectionMutationInfo(0.11375, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.FixedQuantity, 0.0, 3, 0.0, 1));
+
+            // Jiggle 2% of connections.
+            list.Add(new ConnectionMutationInfo(0.11275, ConnectionPerturbanceType.JiggleGaussian,
+                                                ConnectionSelectionType.Proportional, 0.02, 0, 0.0, 1));
 
             // Reset mutations. 1, 2 and 3 connections respectively.
-            list.Add(new ConnectionMutationInfo(0.015, ConnectionPerturbanceType.Reset,
+            list.Add(new ConnectionMutationInfo(0.03, ConnectionPerturbanceType.Reset,
                                                 ConnectionSelectionType.FixedQuantity, 0.0, 1, 0.0, 0));
 
-            list.Add(new ConnectionMutationInfo(0.015, ConnectionPerturbanceType.Reset,
+            list.Add(new ConnectionMutationInfo(0.03, ConnectionPerturbanceType.Reset,
                                                 ConnectionSelectionType.FixedQuantity, 0.0, 2, 0.0, 0));
 
-            list.Add(new ConnectionMutationInfo(0.015, ConnectionPerturbanceType.Reset,
+            list.Add(new ConnectionMutationInfo(0.03, ConnectionPerturbanceType.Reset,
                                                 ConnectionSelectionType.FixedQuantity, 0.0, 3, 0.0, 0));
 
+            // Reset 2% of connections.
+            list.Add(new ConnectionMutationInfo(0.001, ConnectionPerturbanceType.Reset,
+                                                ConnectionSelectionType.Proportional, 0.02, 0, 0.0, 0));
             list.Initialize();
             return list;
         }

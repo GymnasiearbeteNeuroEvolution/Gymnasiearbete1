@@ -1,16 +1,22 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2012 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
-using Redzen.Structures;
 using SharpNeat.Utility;
 
 namespace SharpNeat.Core
@@ -19,7 +25,7 @@ namespace SharpNeat.Core
     /// Encapsulates genome evaluation data; specifically whether the genome has been evaluated, the genome's fitness,
     /// how many times the genome has been evaluated and if more than once then the mean fitness.
     /// 
-    /// Mean fitness is sometimes used when evaluations are non-deterministic (where each evaluation with the 
+    /// Mean fitness is sometimes used when evaluations are non-determininstic (where each evaluation with the 
     /// same parameters results in a different fitness, usually following some distribution curve) or else 
     /// successive evaluations use different evaluation parameters and therefore result in different fitnesses. 
     /// This approach is sometimes used in order to evaluate against a very computationally expensive fitness
@@ -118,7 +124,7 @@ namespace SharpNeat.Core
         /// <summary>
         /// Gets or sets the total number of times the genome has skipped evaluation.
         /// Some evaluation schemes re-evaluate genomes that persist between generations (e.g. elite genomes)
-        /// at each generation, whereas other schemes may chose to not re-evaluate or only re-evaluate every Nth
+        /// at each generation, whereas other schemes may chose to not re-evaulate or only re-evaluate every Nth
         /// generation/attempt. This counter tracks how many times the genome has been skipped to support such schemes.
         /// </summary>
         public uint EvaluationPassCount

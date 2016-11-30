@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace SharpNeat.Genomes.Neat
@@ -15,7 +22,7 @@ namespace SharpNeat.Genomes.Neat
     /// <summary>
     /// A single comparison item resulting from the comparison of two genomes. If the CorrelationItemType
     /// is Match then both connection gene properties will be non-null, otherwise one of them will be null 
-    /// and the other will hold a reference to a disjoint or excess connection gene.
+    /// and and the other will hold a reference to a disjoint or excess connection gene.
     /// 
     /// Note. We generally only compare connection genes when comparing genomes. Connection genes along with
     /// their innovation IDs actually represent the complete network topology (and of course the connection weights).

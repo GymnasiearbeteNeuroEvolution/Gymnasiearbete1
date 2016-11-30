@@ -1,17 +1,23 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System.Collections.Generic;
-using Redzen.Numerics;
 using SharpNeat.Utility;
 
 namespace SharpNeat.Network
@@ -24,7 +30,7 @@ namespace SharpNeat.Network
     {
         readonly IList<ActivationFunctionInfo> _functionList;
         readonly Dictionary<int,IActivationFunction> _functionDict;
-        readonly DiscreteDistribution _rwl;
+        readonly RouletteWheelLayout _rwl;
 
         #region Constructor
 
@@ -39,7 +45,7 @@ namespace SharpNeat.Network
             for(int i=0; i<count; i++) {
                 probabilities[i] = fnList[i].SelectionProbability;
             }
-            _rwl = new DiscreteDistribution(probabilities);
+            _rwl = new RouletteWheelLayout(probabilities);
             _functionList = fnList;
 
             // Build a dictionary of functions keyed on integer ID.
@@ -61,9 +67,9 @@ namespace SharpNeat.Network
         /// <summary>
         /// Randomly select a function based on each function's selection probability.
         /// </summary>
-        public ActivationFunctionInfo GetRandomFunction(XorShiftRandom rng)
+        public ActivationFunctionInfo GetRandomFunction(FastRandom rng)
         {
-            return _functionList[DiscreteDistributionUtils.Sample(_rwl, rng)];
+            return _functionList[RouletteWheel.SingleThrow(_rwl, rng)];
         }
 
         /// <summary>

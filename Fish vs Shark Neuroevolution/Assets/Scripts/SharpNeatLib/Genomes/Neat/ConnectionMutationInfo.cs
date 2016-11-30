@@ -1,13 +1,20 @@
 /* ***************************************************************************
  * This file is part of SharpNEAT - Evolution of Neural Networks.
  * 
- * Copyright 2004-2016 Colin Green (sharpneat@gmail.com)
+ * Copyright 2004-2006, 2009-2010 Colin Green (sharpneat@gmail.com)
  *
- * SharpNEAT is free software; you can redistribute it and/or modify
- * it under the terms of The MIT License (MIT).
+ * SharpNEAT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * You should have received a copy of the MIT License
- * along with SharpNEAT; if not, see https://opensource.org/licenses/MIT.
+ * SharpNEAT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SharpNEAT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace SharpNeat.Genomes.Neat
@@ -16,7 +23,7 @@ namespace SharpNeat.Genomes.Neat
     /// Each instance of ConnectionMutationInfo describes a type of mutation and associated parameters.
     /// 
     /// A list of ConnectionMutationInfo objects describe a connection weight mutation scheme - a set
-    /// of a number of different types of mutation along with the probability of each type occurring
+    /// of a number of different types of mutation along with the probability of each type occuring
     /// when spawning offspring genomes asexually.
     /// </summary>
     public class ConnectionMutationInfo
@@ -35,14 +42,14 @@ namespace SharpNeat.Genomes.Neat
         /// Construct with the provided mutation type and supporting parameters.
         /// </summary>
         /// <param name="activationProbability">The probability that this type of mutation will be chosen</param>
-        /// <param name="perturbanceType">The type of weight perturbation the info object represents.</param>
+        /// <param name="perturbanceType">The type of weight perturbance the info object represents.</param>
         /// <param name="selectionType">The type of connection subset selection the info object represents.</param>
         /// <param name="selectionProportion">For ConnectionSelectionType.Proportional this gives the proportion of connections to select.</param>
         /// <param name="selectionQuantity">For ConnectionSelectionType.FixedQuantity this gives the number of connections to select.</param>
         /// <param name="perturbanceMagnitude">For ConnectionPerturbanceType.JiggleEven this gives the magnitude of the extents of the 
         /// even distribution used for generating jiggle weight deltas.</param>
-        /// <param name="sigma">For ConnectionPerturbanceType.JiggleGaussian this specifies the sigma to use for
-        /// the Gaussian distribution used for generating jiggle weight deltas.</param>
+        /// <param name="sigma">For For ConnectionPerturbanceType.JiggleGaussian this specifies the sigma to use for
+        /// the gaussian distribution used for generating jiggle weight deltas.</param>
         public ConnectionMutationInfo(double activationProbability, 
                                       ConnectionPerturbanceType perturbanceType,
                                       ConnectionSelectionType selectionType,
@@ -87,7 +94,7 @@ namespace SharpNeat.Genomes.Neat
         }
 
         /// <summary>
-        /// Gets the type of weight perturbation the info object represents.
+        /// Gets the type of weight perturbance the info object represents.
         /// </summary>
         public ConnectionPerturbanceType PerturbanceType
         {
@@ -127,7 +134,7 @@ namespace SharpNeat.Genomes.Neat
         }
 
         /// <summary>
-        /// Gets the sigma to use for the Gaussian distribution used for generating jiggle weight deltas; for ConnectionPerturbanceType.JiggleGaussian.
+        /// Gets the sigma to use for the gaussian distribution used for generating jiggle weight deltas; for ConnectionPerturbanceType.JiggleGaussian.
         /// </summary>
         public double Sigma
         {
