@@ -49,37 +49,26 @@ public class Fish : UnitController
             float rightSensor = 0;
             float topRightSensor = 0;
             float bottomRightSensor = 0;
-            float topSensor = 0;
             float bottomSensor = 0;
-            // Front sensor
-            if (HitsTag("Wall", transform.position + new Vector3(1, 0, 0)))
+            // right sensor
+            if (HitsTag("Wall",new Vector3(1, 0, 0)))
             {
                 rightSensor = 1 - hit.distance / FishSettings.Instance.SensorRange;
             }
-            if (HitsTag("Wall", transform.position + new Vector3(1, 0.5f, 0)))
+            if (HitsTag("Wall", new Vector3(1, 0.5f, 0)))
             {
                 topRightSensor = 1 - hit.distance / FishSettings.Instance.SensorRange;
             }
-            if (HitsTag("Wall", transform.position + new Vector3(1,-0.5f, 0)))
+            if (HitsTag("Wall", new Vector3(1,-0.5f, 0)))
             {
                 bottomRightSensor = 1 - hit.distance / FishSettings.Instance.SensorRange;
             }
-            if (HitsTag("Wall", transform.position + new Vector3(0, 1, 0)))
-            {
-                topSensor = 1 - hit.distance / FishSettings.Instance.SensorRange;
-            }
-            if (HitsTag("Wall", transform.position + new Vector3(0, -1, 0)))
-            {
-                bottomSensor = 1 - hit.distance / FishSettings.Instance.SensorRange;
-            }
-
 
             ISignalArray inputArr = box.InputSignalArray;
             inputArr[0] = rightSensor;
             inputArr[1] = topRightSensor;
             inputArr[2] = bottomRightSensor;
             //inputArr[3] = topSensor;
-            inputArr[3] = bottomSensor;
             //inputArr[5] = transform.position.x;
             //inputArr[6] = transform.position.y;
 
@@ -95,13 +84,15 @@ public class Fish : UnitController
             else
                 jump = false;
             //var angle = turn * FishSettings.Instance.TurnSpeed * Time.deltaTime;
-            if(isGrounded)
-                rigid.AddForce(moveX * FishSettings.Instance.FishSpeed ,0 ,0);
+
             if (jump == true && isGrounded)
             {
-                rigid.velocity = new Vector3(moveX * FishSettings.Instance.FishSpeed * Time.deltaTime, FishSettings.Instance.JumpSpeed, 0);
+                rigid.velocity = new Vector3( moveX * FishSettings.Instance.FishSpeed * Time.deltaTime, FishSettings.Instance.JumpSpeed, 0);
                 timesJumped++;
             }
+            else if (isGrounded)
+                rigid.AddForce(moveX * FishSettings.Instance.FishSpeed, 0, 0);
+
             //transform.Rotate(new Vector3(0, 0, turn));
             //transform.Translate(new Vector3(1,1,0) * move);
             /*if(!isHit && IsWithinBounds())
@@ -117,7 +108,7 @@ public class Fish : UnitController
     }
 
     private bool HitsTag(string tag, Vector3 v)
-    {
+    { 
         if (Physics.Raycast(transform.position + transform.right * 1.1f, transform.TransformDirection(v.normalized), out hit, FishSettings.Instance.SensorRange))
         {
             if (hit.collider.tag.Equals(tag))
@@ -141,8 +132,6 @@ public class Fish : UnitController
 
     public override float GetFitness()
     {
-        if (gameObject.transform.position.x < 0)
-            return 0;
         _fitness = (gameObject.transform.position.x/10)- (WallHits*5);
         if (_fitness < 0)
             return 0;

@@ -10,11 +10,10 @@ using System.IO;
 
 public class NEATController : MonoBehaviour {
 
-    const int NUM_INPUTS = 4;
+    const int NUM_INPUTS = 3;
     const int NUM_OUTPUTS = 2;
 
     public int Trials;
-    //public float TrialDuration = 0;
     public bool GenomeEvaluated = false;
     public float StoppingFitness;
     bool EARunning;
