@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2ffd9d18e240ca34c877a3012de4a529
+timeCreated: 1475049501
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - fishPrefab: {fileID: 1000010052369920, guid: fd3b86b4bb2186547a975d6f99117c11,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
