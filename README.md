@@ -1,2 +1,2 @@
 # Gymnasiearbete1
-Folder of great stuff
+Includes a fully functioning organism-simulator for Unity3D based on SharpNEAT.
