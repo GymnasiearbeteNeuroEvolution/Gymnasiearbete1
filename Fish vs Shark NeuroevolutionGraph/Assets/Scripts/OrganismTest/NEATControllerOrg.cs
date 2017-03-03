@@ -254,10 +254,10 @@ namespace OrganismTest
                 return;
             }
 
-            // Get a genome decoder that can convert genomes to phenomes.
+            // Genomedecoders convert genomes to pheonomes
             var genomeDecoder = experiment.CreateGenomeDecoder();
 
-            // Decode the genome into a phenome (neural network).
+            // Decode into a network
             var phenome = genomeDecoder.Decode(genome);
 
             GameObject obj = Instantiate(Unit, transform.position, Unit.transform.rotation) as GameObject;
